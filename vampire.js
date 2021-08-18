@@ -40,6 +40,45 @@ class Vampire {
     return this.numberOfVampiresFromOriginal < vampire.numberOfVampiresFromOriginal;
   }
 
+  /** Tree traversal methods **/
+
+  // Returns the vampire object with that name, or null if no vampire exists with that name
+  vampireWithName(name) {
+    if (name === this.name) {
+      return this;
+    };
+    for (const vampire of this.offspring) {      
+      let vampireName = vampire.vampireWithName(name);
+      if (vampireName !== null) {
+        return vampireName;
+      }
+    };
+    return null; 
+  }
+
+  // Returns the total number of vampires that exist
+  get totalDescendents() {
+    let totalVampires = this.offspring.length;
+    
+      for (const vamp of this.offspring) {
+        totalVampires += vamp.totalDescendents;
+      }
+    return totalVampires;
+  }
+
+  // Returns an array of all the vampires that were converted after 1980
+  get allMillennialVampires() {
+    let vampires = [];
+    if (this.yearConverted > 1980) {
+      vampires.push(this);
+    }
+    for (const vamp of this.offspring) {
+      const findVamp = vamp.allMillennialVampires;
+      vampires = vampires.concat(findVamp);
+    }
+    return vampires;
+  }
+
   /** Stretch **/
 
   // Returns the closest common ancestor of two vampires.
@@ -49,6 +88,14 @@ class Vampire {
   // * when comparing Ansel and Andrew, Ansel is the closest common anscestor.
   closestCommonAncestor(vampire) {
 
+    let thisVampire = this;
+    while (!(thisVampire === vampire)) {
+      if (thisVampire.numberOfVampiresFromOriginal < vampire.numberOfVampiresFromOriginal) {
+        vampire = vampire.creator;
+      } else {
+        thisVampire = thisVampire.creator;
+      }
+    } return thisVampire;
   }
 }
 
